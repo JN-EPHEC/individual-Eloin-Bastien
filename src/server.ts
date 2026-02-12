@@ -1,5 +1,7 @@
 import express, { type Request, type Response } from "express";
 import userRoutes from "./routes/userRoutes.js";
+import sequelize from "./config/database.js";
+import User from "./models/User.js";
 
 const app = express();
 const port = 3000;
@@ -26,6 +28,10 @@ app.get("/api/hello/:name", (req: Request, res: Response) => {
 });
 
 app.use("/api/users", userRoutes);
+
+sequelize.sync().then(() => {
+  console.log("La base de données a été synchronisée avec succès !");
+});
 
 app.listen(port, () => {
   console.log(`Server lancé sur http://localhost:${port}`);
