@@ -2,9 +2,17 @@ import express, { type Request, type Response } from "express";
 import userRoutes from "./routes/userRoutes.js";
 import sequelize from "./config/database.js";
 import User from "./models/User.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
 const port = 3000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.json());
+
+app.use(express.static(path.join(__dirname, "..", "public")));
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Bienvenue sur mon serveur API TypeScript!");
@@ -29,10 +37,21 @@ app.get("/api/hello/:name", (req: Request, res: Response) => {
 
 app.use("/api/users", userRoutes);
 
-sequelize.sync().then(() => {
-  console.log("La base de données a été synchronisée avec succès !");
-});
+async function start() {
+  try {
+    await sequelize.authenticate();
+    console.log("Connexion à la base de données établie.");
 
-app.listen(port, () => {
-  console.log(`Server lancé sur http://localhost:${port}`);
-});
+    sequelize.sync().then(() => {
+      console.log("La base de données a été synchronisée avec succès !");
+    });
+
+    app.listen(port, () => {
+      console.log(`Server lancé sur http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.error("Erreur de connexion / synchronisation DB :", error);
+  }
+}
+
+start();
