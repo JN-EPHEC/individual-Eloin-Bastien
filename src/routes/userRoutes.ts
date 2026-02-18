@@ -9,9 +9,23 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 router.post("/", async (req, res) => {
-  const { nom, prenom } = req.body;
-  const newUser = await User.create({ nom, prenom });
-  res.status(201).json(newUser);
+  try {
+    const { nom, prenom, email } = req.body;
+
+    if (!nom || !prenom || !email) {
+      return res
+        .status(400)
+        .json({ error: "nom, prenom et email sont requis" });
+    }
+
+    const newUser = await User.create({ nom, prenom, email });
+    res.status(201).json(newUser);
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Erreur lors de la création de l'utilisateur" });
+  }
 });
 
 router.delete("/:id", async (req, res) => {

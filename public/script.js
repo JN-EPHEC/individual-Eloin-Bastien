@@ -1,6 +1,7 @@
 const form = document.getElementById("user-form");
 const nom = document.getElementById("nom");
 const prenom = document.getElementById("prenom");
+const email = document.getElementById("email");
 const list = document.getElementById("user-list");
 
 // Chargement page, GET /api/users
@@ -15,7 +16,7 @@ async function loadUsers() {
       "list-group-item d-flex justify-content-between align-items-center";
     li.dataset.id = u.id;
     li.innerHTML = `
-      <span>${u.nom} ${u.prenom}</span>
+      <span>${u.nom} ${u.prenom} - ${u.email}</span>
       <button class="btn btn-sm btn-danger">X</button>
     `;
     list.appendChild(li);
@@ -31,7 +32,7 @@ form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   // Valeurs du form
-  const body = { nom: nom.value, prenom: prenom.value };
+  const body = { nom: nom.value, prenom: prenom.value, email: email.value };
 
   // POST /api/users
   const res = await fetch("/api/users", {

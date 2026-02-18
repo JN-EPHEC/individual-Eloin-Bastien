@@ -18,14 +18,14 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Bienvenue sur mon serveur API TypeScript!");
 });
 
-app.get("/api/data", (req: Request, res: Response) => {
+/* app.get("/api/data", (req: Request, res: Response) => {
   const etudiants = [
     { id: 1, nom: "Dupont", prenom: "Jean" },
     { id: 2, nom: "Martin", prenom: "Sophie" },
     { id: 3, nom: "Doe", prenom: "John" },
   ];
   res.json(etudiants);
-});
+}); */
 
 app.get("/api/hello/:name", (req: Request, res: Response) => {
   const name = req.params.name;
@@ -42,9 +42,9 @@ async function start() {
     await sequelize.authenticate();
     console.log("Connexion à la base de données établie.");
 
-    sequelize.sync().then(() => {
-      console.log("La base de données a été synchronisée avec succès !");
-    });
+    await sequelize.sync();
+    //{ force: true } A AJOUTER POUR RESET DB
+    console.log("La base de données a été synchronisée avec succès !");
 
     app.listen(port, () => {
       console.log(`Server lancé sur http://localhost:${port}`);
