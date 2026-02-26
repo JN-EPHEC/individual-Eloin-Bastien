@@ -1,23 +1,47 @@
-import { Router, type Request, type Response } from "express";
-import User from "../models/User.js";
+import { Router } from "express";
+import * as userController from "../controllers/userController";
 
 const router = Router();
 
-router.get("/", async (req: Request, res: Response) => {
-  const users = await User.findAll();
-  res.json(users);
-});
+/**
+ *  @swagger
+ *  /api/users:
+ *  get:
+ *    summary: Récupère la liste des utilisateurs
+ *    tags: [Users]
+ *    responses:
+ *      200:
+ *        description: Succès
+ */
 
-router.post("/", async (req, res) => {
-  const { nom, prenom } = req.body;
-  const newUser = await User.create({ nom, prenom });
-  res.status(201).json(newUser);
-});
+router.get("/", userController.getAllUsers);
 
-router.delete("/:id", async (req, res) => {
-  const id = Number(req.params.id);
-  await User.destroy({ where: { id } });
-  res.status(204).send();
-});
+/**
+ *  @swagger
+ *  /api/users:
+ *  post:
+ *    summary: Ajouter un utilisateur
+ *    tags: [Users]
+ *    responses:
+ *      201:
+ *        description: Créé
+ */
+router.post("/", userController.createUser);
+
+/**
+ *  @swagger
+ *  /api/users/{id}:
+ *    delete:
+ *      summary: Supprimer un utilisateur
+ *      tags: [Users]
+ *      parameters:
+ *        - in: path
+ *          name: id
+ *          required: true
+ *      responses:
+ *        204:
+ *          description: Supprimé
+ */
+router.delete("/:id", userController.deleteUser);
 
 export default router;

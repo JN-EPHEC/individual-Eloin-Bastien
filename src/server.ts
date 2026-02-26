@@ -1,20 +1,30 @@
-import express, { type Request, type Response } from "express";
+import express, {
+  type Request,
+  type Response,
+  type NextFunction,
+} from "express";
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./config/swagger.js";
 import userRoutes from "./routes/userRoutes.js";
 import sequelize from "./config/database.js";
 import User from "./models/User.js";
-import path from "path";
-import { fileURLToPath } from "url";
+import { requestLogger } from "./middlewares/logger.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
+import cors from "cors";
 
 const app = express();
 const port = 3000;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
+// Middleware
 app.use(express.json());
+app.use(cors());
+app.use(requestLogger);
+app.use(express.static("public"));
 
-app.use(express.static(path.join(__dirname, "..", "public")));
+// Documentation Swagger
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.get("/", (req: Request, res: Response) => {
+/* app.get("/", (req: Request, res: Response) => {
   res.send("Bienvenue sur mon serveur API TypeScript!");
 });
 
@@ -34,7 +44,9 @@ app.get("/api/hello/:name", (req: Request, res: Response) => {
     time: new Date().toISOString(),
   });
 });
+*/
 
+// Routes
 app.use("/api/users", userRoutes);
 
 async function start() {
@@ -53,5 +65,16 @@ async function start() {
     console.error("Erreur de connexion / synchronisation DB :", error);
   }
 }
+
+// Gestion erreur 404 pour les routes non définies
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const error = new Error(
+    `Route introuvable : ${req.method} ${req.originalUrl}`,
+  );
+  (error as any).status = 404;
+  next(error);
+});
+
+app.use(errorHandler);
 
 start();
