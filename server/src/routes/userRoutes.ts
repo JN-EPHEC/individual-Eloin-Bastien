@@ -1,5 +1,6 @@
 import { Router } from "express";
 import * as userController from "../controllers/userController";
+import { checkIdParam } from "../middlewares/checkIdParam";
 
 const router = Router();
 
@@ -18,6 +19,16 @@ router.get("/", userController.getAllUsers);
 
 /**
  *  @swagger
+ *  /api/users/{id}:
+ *  get:
+ *    summary: Un utilisateur par ID
+ *    tags: [Users]
+ */
+
+router.get("/:id", checkIdParam, userController.getUserById);
+
+/**
+ *  @swagger
  *  /api/users:
  *  post:
  *    summary: Ajouter un utilisateur
@@ -27,6 +38,22 @@ router.get("/", userController.getAllUsers);
  *        description: Créé
  */
 router.post("/", userController.createUser);
+
+/**
+ *  @swagger
+ *  /api/users/{id}:
+ *  put:
+ *    summary: Modifier un utilisateur
+ *    tags: [Users]
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *    responses:
+ *      200:
+ *        description: Mis à jour
+ */
+router.put("/:id", checkIdParam, userController.updateUser);
 
 /**
  *  @swagger

@@ -1,4 +1,4 @@
-import type { Request, Response } from "express";
+import type { Request, Response, NextFunction } from "express";
 import User from "../models/User.js";
 
 export const getAllUsers = async (req: Request, res: Response) => {
@@ -10,6 +10,22 @@ export const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
+export const getUserById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const user = await User.findByPk(Number(req.params.id));
+
+    if (!user) return res.status(404).json({ error: "Utilisateur non trouvé" });
+
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const createUser = async (req: Request, res: Response) => {
   try {
     const { nom, prenom } = req.body;
@@ -17,6 +33,25 @@ export const createUser = async (req: Request, res: Response) => {
     res.status(201).json(newUser);
   } catch (error) {
     res.status(500).json({ error: "Erreur lors de la creation" });
+  }
+};
+
+export const updateUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = Number(req.params.id);
+
+    const [rows] = await User.update(req.body, { where: { id } });
+
+    if (rows === 0)
+      return res.status(404).json({ error: "Pas d'utilisateur à modifier" });
+
+    res.json({ message: "Utilisateur mis à jour !" });
+  } catch (error) {
+    next(error);
   }
 };
 

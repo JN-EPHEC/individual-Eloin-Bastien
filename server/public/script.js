@@ -16,6 +16,7 @@ async function loadUsers() {
     li.dataset.id = u.id;
     li.innerHTML = `
       <span>${u.nom} ${u.prenom}</span>
+      <button class="btn btn-sm btn-warning edit-btn">Modifier</button>
       <button class="btn btn-sm btn-danger">X</button>
     `;
     list.appendChild(li);
@@ -49,18 +50,38 @@ form.addEventListener("submit", async (e) => {
 
 // Delete user
 
+// Gestion des clics (Delete & Update)
 list.addEventListener("click", async (e) => {
   if (e.target.tagName !== "BUTTON") return;
 
   const li = e.target.closest("li");
   const id = li.dataset.id;
 
-  const res = await fetch(`/api/users/${id}`, {
-    method: "DELETE",
-  });
+  if (e.target.classList.contains("btn-danger")) {
+    const res = await fetch(`/api/users/${id}`, {
+      method: "DELETE",
+    });
 
-  if (res.status === 204) {
-    await loadUsers();
+    if (res.status === 204) {
+      await loadUsers();
+    }
+  }
+
+  if (e.target.classList.contains("btn-warning")) {
+    const nouveauNom = prompt("Nouveau nom :");
+    const nouveauPrenom = prompt("Nouveau prénom :");
+
+    if (nouveauNom && nouveauPrenom) {
+      const res = await fetch(`/api/users/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nom: nouveauNom, prenom: nouveauPrenom }),
+      });
+
+      if (res.ok) {
+        await loadUsers();
+      }
+    }
   }
 });
 
