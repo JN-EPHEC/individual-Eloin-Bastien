@@ -26,7 +26,11 @@ function App() {
   };
 
   useEffect(() => {
-    loadUsers();
+    const fetchData = async () => {
+      await loadUsers();
+    };
+
+    fetchData();
   }, []);
 
   // Ajouter un utilisateur (POST)
