@@ -12,7 +12,7 @@ function App() {
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
 
-  const API_URL = "http://localhost:3000/api/users";
+  const API_URL = `${import.meta.env.VITE_API_URL}/users`;
 
   // Charger les utilisateurs (GET)
   const loadUsers = async () => {
