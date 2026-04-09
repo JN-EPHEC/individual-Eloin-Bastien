@@ -77,7 +77,7 @@ function App() {
       <div className="card shadow-sm">
         <div className="card-body">
           <h1 className="card-title mb-3 d-flex justify-content-between align-items-center">
-            <span>Liste des étudiants</span>
+            <span>Liste des étudiants React</span>
             <span className="badge bg-secondary">{data.length}</span>
           </h1>
 
